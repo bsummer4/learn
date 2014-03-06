@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+</head>
+<body>
+<script type="text/javascript">
+
+var ws = new WebSocket("ws://localhost:9160/");
+ws.onopen = function() { console.log("Connection opened"); }
+ws.onmessage = function (evt) { console.log("MSG " + evt.data); }
+ws.onclose = function (evt) { console.log("Connection closed"); }
+
+</script>
+</body>
+</html>
