@@ -1,18 +1,27 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-</head>
-<body>
 <script type="text/javascript">
 
-var username = prompt("username", "fred");
-var ws = new WebSocket("ws://localhost:9160/");
-ws.onmessage = function (evt) { console.log("MSG " + evt.data); }
-ws.onclose = function (evt) { console.log("Connection closed"); }
-ws.onopen = function() {
-	console.log("Connection opened");
-	ws.send(username); }
+var send = null;
+
+window.onload = (function() {
+	var username = prompt("username", "fred");
+	var topic = prompt("What do you want to talk about?", "cats");
+	var ws = new WebSocket("ws://localhost:9172/");
+	send = function(m) { ws.send(m); }
+	ws.onmessage = function (evt) {
+		document.write("[" + topic + "] " + evt.data + "<br>"); }
+
+	ws.onclose = function (evt) { console.log("Connection closed"); }
+	ws.onopen = function() {
+		console.log("Connection opened");
+		ws.send(username);
+		ws.send(topic); }});
 
 </script>
+</head>
+<body>
+<p>Opening a websocket....</p>
 </body>
 </html>
