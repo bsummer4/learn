@@ -8,7 +8,7 @@ var send = null;
 window.onload = (function() {
 	var username = prompt("username", "fred");
 	var topic = prompt("What do you want to talk about?", "cats");
-	var ws = new WebSocket("ws://localhost:9172/");
+	var ws = new WebSocket("ws://localhost:9180/" + topic);
 	send = function(m) { ws.send(m); }
 	ws.onmessage = function (evt) {
 		document.write("[" + topic + "] " + evt.data + "<br>"); }
@@ -16,8 +16,7 @@ window.onload = (function() {
 	ws.onclose = function (evt) { console.log("Connection closed"); }
 	ws.onopen = function() {
 		console.log("Connection opened");
-		ws.send(username);
-		ws.send(topic); }});
+		ws.send(username); }});
 
 </script>
 </head>

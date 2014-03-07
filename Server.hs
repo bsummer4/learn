@@ -6,7 +6,7 @@ import Control.Concurrent
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import Data.Text.Encoding as E
+import Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
 import Data.Map (Map)
 import qualified Data.Map as M
@@ -48,11 +48,12 @@ broadcast topic user msg clients = do
 	forM_ clients $ \conn → WS.sendTextData conn payload
 
 application ∷ MVar Connections → WS.PendingConnection → IO()
-application stateV pending = do
-	conn ← WS.acceptRequest pending
+application stateV req = do
+	let topic = T.decodeUtf8 $ WS.requestPath $ WS.pendingRequest req
+	conn ← WS.acceptRequest req
 	user ← WS.receiveData conn
-	topic ← WS.receiveData conn
 	user' ← modifyMVar stateV $ return . swap . addClient topic user conn
+	T.putStrLn $ T.concat ["user(", user', ") requested topic(", topic, ")"]
 	let disconnect = modifyMVar_ stateV $ return . removeClient topic user'
 	flip finally disconnect $ forever $ do
 		msg∷Text ← WS.receiveData conn
@@ -61,4 +62,4 @@ application stateV pending = do
 main ∷ IO()
 main = do
 	state ← newMVar(M.empty∷Connections)
-	WS.runServer "0.0.0.0" 9172 $ application state
+	WS.runServer "0.0.0.0" 9180 $ application state
