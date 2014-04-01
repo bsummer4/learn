@@ -15,7 +15,6 @@ import Data.Tuple (swap)
 
 
 -- State Manipulations
-data Client = Client{cUser∷Text, cTopic∷Text, cConn∷WS.Connection}
 type Connections = Map Text (Map Text WS.Connection)
 
 fudgeUsername ∷ Text → Text
