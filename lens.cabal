@@ -1,0 +1,11 @@
+name: learn-to-lens
+version: 0.1.0.0
+author: Benjamin Summers
+maintainer: benjaminsummers1987@gmail.com
+build-type: Simple
+cabal-version: >=1.10
+
+executable learn-to-lens
+    default-language: Haskell2010
+    main-is: A.hs
+    build-depends: base, text, lens, base-unicode-symbols
