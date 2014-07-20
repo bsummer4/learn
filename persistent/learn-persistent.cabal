@@ -11,6 +11,6 @@ cabal-version:       >=1.10
 executable learn-persistent
   main-is:             Main.hs
   ghc-options:         -O3 -static -optl-static -optl-pthread
-  build-depends:       base >=4.7 && <4.8, persistent, persistent-sqlite,
+  build-depends:       base >=4.7 && <4.8, persistent, persistent-postgresql,
                        transformers, persistent-template, time, base-unicode-symbols
   default-language:    Haskell2010

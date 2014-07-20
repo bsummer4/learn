@@ -1,4 +1,3 @@
-TODO Handle constraint errors.
+TODO Handle constraint violations at runtime.
 TODO Write ‘Dockerfile’.
-TODO Switch to PostgreSQL.
 TODO Change the example to include date and location data.
