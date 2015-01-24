@@ -2,20 +2,52 @@ A Proposal For A More Efficient SourceGraph Representation
 
 > {-# LANGUAGE UnicodeSyntax, NoImplicitPrelude #-}
 
-> import ClassyPrelude
+> import ClassyPrelude hiding (hash)
 > import Data.Word
 > import Data.MultiMap (MultiMap)
 > import Network.URI (URI)
-> import qualified Data.Vector.Unboxed as Vec
-> import qualified Crypto.Hash.SHA1 as SHA1
+> import qualified Data.Vector as Vector
+> import qualified Data.ByteString.Lazy as LBS
+> import qualified Data.ByteString as BS
+> import Crypto.Hash (SHA1,hashlazy,Digest,digestFromByteString)
 > import Data.Time (UTCTime)
+> import Data.Binary (decode,encode,Binary(..),getWord8,putWord8)
+> import Data.Byteable (toBytes)
 
-> type SHA1 = SHA1.Ctx
+> import qualified Data.Set as S
+> import qualified Data.Text as T
+> import qualified Data.Map as M
+
+> newtype SHA1Sum = SHA1Sum (Digest SHA1)
+>   deriving (Ord,Eq)
+
+> fromJust :: Maybe a -> a
+> fromJust Nothing = error "fromJust called with Nothing!"
+> fromJust (Just a) = a
+
+> instance Binary a => Binary (Vector a) where
+>   put = put . Vector.toList
+>   get = Vector.fromList <$> get
+
+> instance Binary UTCTime where
+>   put = undefined
+>   get = undefined
+
+> instance Binary URI where
+>   put = undefined
+>   get = undefined
+
+> instance Binary SHA1Sum where
+>   get = SHA1Sum <$> fromJust <$> digestFromByteString <$> BS.pack <$> replicateM 20 getWord8
+>   put (SHA1Sum x) = mapM_ putWord8 $ BS.unpack $ toBytes x
+
+> type HashOf a = SHA1Sum
+> type ShaMap a     = Map (HashOf a) a
 
 First, let's define a clean set of data types for definitions and
 references within a single commit.
 
-> data Loc          = Loc {fn∷FilePath, start∷Word32, length∷Word32}
+> type Loc          = (Text, Word32, Word32)
 > type Def          = Loc
 > type Defs         = Vector Loc
 > type DefID        = Word32
@@ -32,35 +64,37 @@ lookups efficient:
     by an integer id, instead of needing to use an abstract string reference.
     This also means that there are never any broken links.
 
-> data BuildInfo    = BuildInfo SHA1 URI UTCTime
-> type XRef         = (Loc,BuildID,DefID)
+> type BuildInfo    = (SHA1Sum,URI,UTCTime)
+> type XRef         = (BuildID,Ref)
 > type ExternalRefs = Vector XRef
-> type Build        = (BuildInfo, Defs, InternalRefs, ExternalRefs)
-> type BuildID      = SHA1 -- Hash of a build.
+> data Build        = Build BuildInfo Defs InternalRefs ExternalRefs
+> type BuildID      = HashOf Build
+
+> instance Binary Text where
+>   put = put . T.unpack
+>   get = T.pack <$> get
+
+> instance Binary Build where
+>   put (Build i d r e) = put (i,d,r,e)
+>   get = do { (i,d,r,e) <- get; return (Build i d r e) }
 
 Now we need a way to store all of the builds and the references between them in
 a database. We can just store all of the builds in a large content-addressable
 map, but we also need a quick way to find references between repos.
 
-> type Builds       = Map BuildID Build
-> type XRefsFrom    = MultiMap BuildID (XRef,BuildID,DefID)
-> type XRefsTo      = MultiMap BuildID (XRef,BuildID,DefID)
-> type KnownRepos   = MultiMap SHA1 URI
+> type Builds       = ShaMap Build
+> type XRefs        = Set ((BuildID,Loc),(BuildID,DefID))
+> type KnownRepos   = MultiMap SHA1Sum URI
 > type BuildHistory = [BuildID]
-> data DB           = DB Builds XRefsFrom XRefsTo KnownRepos
+> data DB           = DB Builds XRefs KnownRepos
 
-> type Tarball = ByteString
-> type InsertOp = DB → Build → DB
-> type FetchOp = DB → SHA1 → IO (Maybe Tarball)
-> type BuildOp = Tarball → IO (Maybe Build)
+This concrete Haskell representation are not very efficient, but think of
+them as a schema for an efficient on-disk data structure. These data-types
+have some very nice properties for efficient implementation.
 
-This concrete representation is not very efficient, but these datatype
-have some very nice properties that can lead to very efficient
-implementations. Specifically,
+- Builds, XRefs are all append-only tables.
 
-- Builds, XRefsFrom, and XRefsTo are both append-only tables.
-
-- XRefsFrom,XRefsTo should be compact/fast enough to be handled by a single node.
+- XRefs should be compact/fast enough to be handled by a single node.
   - mmap() friendly layout means no loading/parsing of files.
   - This is also deriviable from the Builds table.
     - If we lose data, we can efficiently reconstruct it from a snapshot,
@@ -71,3 +105,26 @@ implementations. Specifically,
     - SHA1-based hashing means keys always have a uniform distribution.
     - Hashing takes is basically free, just take some bits from the full
       sha1 hash.
+
+Here's a quick reference implementation, so that I can play with this model:
+
+> type Tarball = ByteString
+
+> sha1 :: Binary a => a -> SHA1Sum
+> sha1 = SHA1Sum . hashlazy . encode
+
+> sha1Insert :: Binary a => a -> Map SHA1Sum a -> Map SHA1Sum a
+> sha1Insert v = M.insert (sha1 v) v
+
+> xrefs :: BuildID -> Build -> Set ((BuildID,Loc),(BuildID,DefID))
+> xrefs from (Build _ _ _ rs) =
+>   S.fromList $ (\(to,(loc,def)) -> ((from,loc),(to,def))) <$> Vector.toList rs
+
+> insert :: DB → Build → DB
+> insert db@(DB builds xrs repos) build = DB builds' xrs' repos
+>   where buildID = sha1 build
+>         xrs'    = xrefs buildID build
+>         builds' = M.insert buildID build builds
+
+-- fetch :: DB → SHA1Sum → IO (Maybe Tarball)
+-- build :: Tarball → IO (Maybe Build)
