@@ -1,3 +1,4 @@
 nixos.pkgs.haskellPackages.cabalInstall
 nixos.pkgs.haskellPackages.ghcPlain
 nixos.pkgs.haskellPackages.postgresqlSimple
+nixos.pkgs.postgresql94
