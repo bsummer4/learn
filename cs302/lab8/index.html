@@ -1,0 +1,562 @@
+<title> CS302 -- Lab 8 -- Dijkstra's Algorithm</title>
+
+<h1> CS302 -- Lab 8 -- Dijkstra's Algorithm</h1>
+<h3>
+<UL> <LI> CS302 -- Data Structures and Algorithms II
+<LI> Fall, 2014
+<LI> <a href=http://www.cs.utk.edu/~plank>James S. Plank</a>
+<LI> <a href=http://www.cs.utk.edu/~plank/plank/classes/cs302/Labs/Lab8/index.html>This file:
+     <b>http://www.cs.utk.edu/~plank/plank/classes/cs302/Labs/Lab8</b></a>
+<LI> Lab Directory: <b>/home/plank/cs302/Labs/Lab8</b>
+</UL>
+</h3>
+
+<hr>
+<center>
+<h4>This is a very long lab writeup.  Make sure you read the <i>whole thing</i>
+before you start hacking.  You are only implementing two methods in this lab -- 
+in particular, you don't have to print anything.  You just have to make it work
+with my code.</h4>
+</center><hr>
+This is a lab that evaluates traffic in a city.  
+Your job is to take information about roads and intersections
+in a city, and derive shortest paths through the city.  Our cities have some regular
+structure:
+
+<UL>
+<LI> The city has <b>streets</b> that travel East-West (roughly), and
+<b>avenues</b> that travel North-South (roughly).
+<LI> Streets and avenues are numbered consecutively upward, starting at
+zero.  
+<LI> By convention, streets will ascend from south to north, and avenues
+will ascend from east to west (Think Manhattan).
+<LI> Even-number streets are one-way, traveling in ascending order of avenue
+(i.e. east to west).
+<LI> Odd-number streets are one-way, traveling in descending order of avenue
+(i.e. west to east).
+<LI> Even-number avenues are one-way, traveling in ascending order of street
+(i.e. south  to north).
+<LI> Odd-number avenues are one-way, traveling in descending order of street
+(i.e. north to south).
+<LI> The only exceptions to above are:
+<UL>
+<LI> Avenues and streets whose numbers are multiples of 5 go in both directions.
+<LI> The highest avenue always goes in both directions.
+</UL>
+<LI> There is an traffic light at every <b>intersection</b>.  Each light has the
+     following properties:
+<UL>
+<LI> An x coordinate.
+<LI> A y coordinate.
+<LI> A duration that the light is green for the street.
+<LI> A duration that the light is green for the avenue.
+</UL>
+<LI> Streets and avenues travel in straight lines between intersections.
+<LI> The speed limit for the entire city is 30 MPH.
+</UL>
+
+We specify our city by simply listing the intersections.  Each intersection has six
+values:
+<p><center><table border=3 cellpadding=3><td><b>Street Avenue X Y  Green-Street Green-Avenue</b></td></table></center><p>
+
+<b>Street</b> and <b>Avenue</b> are integers.  The rest are doubles.  The units of <b>X</b> and <b>Y</b> are miles,
+and the units of <b>Green-Street</b> and <b>Green-Avenue</b> are seconds.
+<p>
+Intersections may be specified in any order.
+<p>
+So, here are some example cities:
+
+<p><center><table border=3 cellpadding=3><td>
+<b><a href=city-1.txt>city-1.txt</a></b>
+<hr>
+<pre>
+0 0  1.3 1  9 12
+0 1  1.0 1  3 4
+</pre>
+</td><td>
+<center>
+<IMG src=city-1.jpg width=200><br>
+</center>
+</td></table></center><p>
+Since light [0,0]'s coordinates are (1.3,1) and light [0,1]'s
+coordinates are (1,1), the distance between the two lights 
+is 0.3 miles.  Note that since 0 is a multiple of five, Street
+zero and Avenue zero are two-way.  Moreover, since Avenue
+one is the highest avenue, it is two-way.
+<hr>
+
+<center><table border=3 cellpadding=3><td>
+<b><a href=city-2.txt>city-2.txt</a></b>
+<hr>
+<pre>
+1 0  1.3 1.4 9  12
+1 1  1   1.4 11  7
+2 0  1.3 1.8 9  12
+1 2  0.7 1.4 3   3
+0 1  1   1   3   3
+2 1  1   2.2 15  7
+2 2  0.7 2.2 6  15
+0 2  0.7 1   3   3
+0 0  1.3 1   9  12
+</pre>
+</td>
+<td>
+<center>
+<IMG src=city-2.jpg width=300><br>
+</center>
+</td></table></center><p>
+
+Now, Streets 1 and 2 are one-way, as is Avenue 1.  The distances between intersections
+are straightforward, with the exception of [2,0] and [2,1].  That segment has a distance
+of 0.5, since <i>sqrt(0.3<sup>2</sup>+0.4<sup>2</sup>)</i> equals five. 
+<p>
+Note also that the intersections are specified in a more random order here.
+
+
+<hr>
+<center><table border=3 cellpadding=3><td>
+<b><a href=city-3.txt>city-3.txt</a></b>
+<hr>
+<pre>
+0 0  0.5 0.1    9  12
+0 1  0.4 0.1    1 110
+0 2  0.3 0.1  110   1
+0 3  0.2 0.1  110   1
+0 4  0.1 0.1  110   1
+
+1 0  0.5 0.2    1 110
+1 1  0.4 0.2  110   1
+1 2  0.3 0.2  110   1
+1 3  0.2 0.2    1 110
+1 4  0.1 0.2    1 110
+
+2 0  0.5 0.3    1 110
+2 1  0.4 0.3  110   1
+2 2  0.3 0.3  110   1
+2 3  0.2 0.3  110   1
+2 4  0.1 0.3    1 110
+</pre>
+</td>
+<td>
+<center>
+<IMG src=city-3.jpg width=500><br>
+</center>
+</td></table></center><p>
+<hr>
+We are going to write a program that uses Dijkstra's algorithm to calculate the fastest path 
+from light [0,0] to the light with the largest street and avenue.  We will always assume that
+we travel each segment of road at exactly 30 MPH.  Moreover, we assume that we never wait
+for light [0,0].  Our program is called 
+<b>city_map</b> and is called as follows:
+
+<p><center><table border=3 cellpadding=3><td valign=top>
+<tt>usage: city_map none|best|worst|avg time|print|jgraph - map on standard input</b>
+</td></table></center><p>
+<p>
+In other words, there are two command line arguments.  The first has one of four values:
+<p>
+<uL>
+<LI> <b>"none"</b> -- This simply reads in the graph.
+<LI> <b>"best"</b> -- This will compute the fastest path through the graph assuming that 
+      your traffic light is always green.
+<LI> <b>"worst"</b> -- This will compute the fastest path through the graph assuming that 
+      your traffic light always just turns red when you reach the light.  In other words,
+      you wait the longest possible time at the light.
+<LI> <b>"avg"</b> -- This is your average waiting time.  If the light is green for <i>G</i>
+     seconds in your direction and <i>R</i> seconds in the other direction, then your 
+     average waiting time is <i>0 * G/(R+G) + (R)/2 * R/(R+G)</i> = <i>R<sup>2</sup>/(2(R+G))</i> seconds.
+</UL>
+<p>
+The second command line has one of three values:
+<p>
+<uL>
+<LI> <b>"time"</b> -- This simply prints out the time of the fastest path.  If <b>none</b> was
+specified, this prints zero.  
+<LI> <b>"print"</b> -- This prints out all of the nodes of the graph, and then the path.
+<LI> <b>"jgraph"</b> -- This creates a picture of the graph in jgraph.  Pipe the output through
+<b>jgraph -P</b> to get a Postscript picture.
+</UL>
+
+Let's go through some examples.  First, as you can see, using <b>none</b> and <b>print</b>
+just prints out the map, printing nodes and their edges (called "Road Segments").
+Note how two-way roads have two segments for the same stretch of road.  Also note the
+distances.  For example, the distance from [2,0] to [2,1] in <b>city-2.txt</b> is indeed 0.5 miles.
+Note -- the intersections are printed in the order in which the nodes are specified in the
+file.
+
+<pre>
+UNIX> <b>city_map none print < city-1.txt</b>
+      0 : Intersection:    0    0 -     1.300000     1.000000 -     9.000000    12.000000
+      1 :    Segment to    0    1       Distance     0.300000
+      2 : Intersection:    0    1 -     1.000000     1.000000 -     3.000000     4.000000
+      3 :    Segment to    0    0       Distance     0.300000
+UNIX> <b>city_map none print < city-2.txt</b>
+      0 : Intersection:    1    0 -     1.300000     1.400000 -     9.000000    12.000000
+      1 :    Segment to    2    0       Distance     0.400000
+      1 :    Segment to    0    0       Distance     0.400000
+      2 : Intersection:    1    1 -     1.000000     1.400000 -    11.000000     7.000000
+      3 :    Segment to    1    0       Distance     0.300000
+      3 :    Segment to    0    1       Distance     0.400000
+      4 : Intersection:    2    0 -     1.300000     1.800000 -     9.000000    12.000000
+      5 :    Segment to    2    1       Distance     0.500000
+      5 :    Segment to    1    0       Distance     0.400000
+      6 : Intersection:    1    2 -     0.700000     1.400000 -     3.000000     3.000000
+      7 :    Segment to    1    1       Distance     0.300000
+      7 :    Segment to    2    2       Distance     0.800000
+      7 :    Segment to    0    2       Distance     0.400000
+      8 : Intersection:    0    1 -     1.000000     1.000000 -     3.000000     3.000000
+      9 :    Segment to    0    2       Distance     0.300000
+      9 :    Segment to    0    0       Distance     0.300000
+     10 : Intersection:    2    1 -     1.000000     2.200000 -    15.000000     7.000000
+     11 :    Segment to    2    2       Distance     0.300000
+     11 :    Segment to    1    1       Distance     0.800000
+     12 : Intersection:    2    2 -     0.700000     2.200000 -     6.000000    15.000000
+     13 :    Segment to    1    2       Distance     0.800000
+     14 : Intersection:    0    2 -     0.700000     1.000000 -     3.000000     3.000000
+     15 :    Segment to    0    1       Distance     0.300000
+     15 :    Segment to    1    2       Distance     0.400000
+     16 : Intersection:    0    0 -     1.300000     1.000000 -     9.000000    12.000000
+     17 :    Segment to    0    1       Distance     0.300000
+     17 :    Segment to    1    0       Distance     0.400000
+UNIX> <b></b>
+</pre>
+
+Now, let's try some shortest path calculations:
+
+<pre>
+UNIX> <b>city_map best time < city-1.txt</b>
+36
+UNIX> <b>city_map worst time < city-1.txt</b>
+40
+UNIX> <b>city_map avg time < city-1.txt</b>
+37.1429
+UNIX> <b></b>
+</pre>
+
+The distance between the two lights in <b>city-1.txt</b> is 0.3 miles, which takes 36 seconds at 30 MPH:
+0.3 / 30 * 3600 = 36.  Therefore the best time is 36 seconds.  The worst time adds four seconds because
+in the worst case, you arrive at the light as it turns green for Avenue 1.  You wait four seconds before
+the light turns green for you again.  The average case adds 1.1429 seconds to the best case.  This is 
+because 3/7 of the time, the light is green.  The other 4/7 of the time, the light is red for an average
+of 2 seconds.  Thus, your expected wait time is 0*(3/7) + 2*(4/7) = 8/7 = 1.1429 seconds.  Note,
+that is also equal to the equation I gave: <i>4<sup>2</sup>/(2(3+4))</i> = 8/7.
+<p>
+We print the paths below:
+
+<pre>
+UNIX> <b>city_map best print < city-1.txt</b>
+      0 : Intersection:    0    0 -     1.300000     1.000000 -     9.000000    12.000000
+      1 :    Segment to    0    1       Distance     0.300000
+      2 : Intersection:    0    1 -     1.000000     1.000000 -     3.000000     4.000000
+      3 :    Segment to    0    0       Distance     0.300000
+      4 : PATH: [0000,0000] -> [0000,0001] - Time:    36.000000
+UNIX> <b>city_map worst print < city-1.txt | grep PATH</b>
+      4 : PATH: [0000,0000] -> [0000,0001] - Time:    40.000000
+UNIX> <b>city_map avg print < city-1.txt | grep PATH</b>
+      4 : PATH: [0000,0000] -> [0000,0001] - Time:    37.142857
+UNIX> <b></b>
+</pre>
+
+Let's look at the paths in 
+<b><a href=city-2.txt>city-2.txt</a></b>:
+
+<pre>
+UNIX> <b>city_map best print < city-2.txt | grep PATH</b>
+     18 : PATH: [0000,0000] -> [0001,0000] - Time:    48.000000
+     19 : PATH: [0001,0000] -> [0002,0000] - Time:    96.000000
+     20 : PATH: [0002,0000] -> [0002,0001] - Time:   156.000000
+     21 : PATH: [0002,0001] -> [0002,0002] - Time:   192.000000
+UNIX> <b>city_map worst print < city-2.txt | grep PATH</b>
+     18 : PATH: [0000,0000] -> [0000,0001] - Time:    39.000000
+     19 : PATH: [0000,0001] -> [0000,0002] - Time:    78.000000
+     20 : PATH: [0000,0002] -> [0001,0002] - Time:   129.000000
+     21 : PATH: [0001,0002] -> [0002,0002] - Time:   231.000000
+UNIX> <b>city_map avg print < city-2.txt | grep PATH</b>
+     18 : PATH: [0000,0000] -> [0001,0000] - Time:    49.928571
+     19 : PATH: [0001,0000] -> [0002,0000] - Time:    99.857143
+     20 : PATH: [0002,0000] -> [0002,0001] - Time:   160.970779
+     21 : PATH: [0002,0001] -> [0002,0002] - Time:   202.327922
+UNIX> <b></b>
+</pre>
+
+Obviously, when all lights are green, the fastest path is the one going
+from light [2,0] to [2,1], since that cuts distance.  That path goes
+(0.4 + 0.4 + 0.5 + 0.3) = 1.6 miles (192 seconds at 30MPH), while the
+path that travels along Street 0 to Avenue 2 goes (0.3 + 0.3 + 0.4 + 0.8) = 
+1.8 miles (216 seconds).
+<p>
+When we wait the maximum time, we wait (9+9+7+15) = 40 seconds for lights,
+for a total of 232 seconds on the first path.  On the second, we wait
+(3+3+3+6) = 15 seconds, for a total of 231.  For that reason, the worst
+case path is the one that travels all the way down Street 0 first.
+The best average case uses the first path.
+
+<p>
+Finally, let's look at <b><a href=city-3.txt>city-3.txt</a></b>.  Clearly,
+the best case path simply has the shortest number of edges, since all
+road segments are the same length:
+
+<pre>
+UNIX> <b>city_map best print < city-3.txt | grep PATH</b>
+     30 : PATH: [0000,0000] -> [0001,0000] - Time:    12.000000
+     31 : PATH: [0001,0000] -> [0002,0000] - Time:    24.000000
+     32 : PATH: [0002,0000] -> [0002,0001] - Time:    36.000000
+     33 : PATH: [0002,0001] -> [0002,0002] - Time:    48.000000
+     34 : PATH: [0002,0002] -> [0002,0003] - Time:    60.000000
+     35 : PATH: [0002,0003] -> [0002,0004] - Time:    72.000000
+UNIX> <b></b>
+</pre>
+
+However, when we wait the maximum amount for each light, we see
+that we can get through the graph in a circuitous fashion, waiting
+a maximum of one second for each light.  Even though this makes
+us travel 1.4 miles (168 seconds) instead of 0.6 (72 seconds), 
+it is worth it because we
+only wait 14 extra seconds for lights.  The original path 
+makes us wait 115 seconds for a total of 187 seconds, making it
+inferior to the path below:
+
+<pre>
+UNIX> <b>city_map worst print < city-3.txt | grep PATH</b>
+     30 : PATH: [0000,0000] -> [0001,0000] - Time:    13.000000
+     31 : PATH: [0001,0000] -> [0002,0000] - Time:    26.000000
+     32 : PATH: [0002,0000] -> [0002,0001] - Time:    39.000000
+     33 : PATH: [0002,0001] -> [0002,0002] - Time:    52.000000
+     34 : PATH: [0002,0002] -> [0002,0003] - Time:    65.000000
+     35 : PATH: [0002,0003] -> [0001,0003] - Time:    78.000000
+     36 : PATH: [0001,0003] -> [0001,0002] - Time:    91.000000
+     37 : PATH: [0001,0002] -> [0001,0001] - Time:   104.000000
+     38 : PATH: [0001,0001] -> [0000,0001] - Time:   117.000000
+     39 : PATH: [0000,0001] -> [0000,0002] - Time:   130.000000
+     40 : PATH: [0000,0002] -> [0000,0003] - Time:   143.000000
+     41 : PATH: [0000,0003] -> [0000,0004] - Time:   156.000000
+     42 : PATH: [0000,0004] -> [0001,0004] - Time:   169.000000
+     43 : PATH: [0001,0004] -> [0002,0004] - Time:   182.000000
+UNIX> <b></b>
+</pre>
+
+The <b>jgraph</b> output is nice if you can plot postscript.  Below, I've
+converted the outputs to JPG files.  For example:
+
+<pre>
+UNIX> <b>city_map none jgraph < city-2.txt | jgraph -P > city-2-none.ps</b>
+UNIX> <b>open city-2-none.ps</b>
+UNIX> <b></b>
+</pre>
+
+Then I convert the postscript to JPG using the <b>Preview</b> program on my 
+Macintosh.
+
+<p><center><table border=3 cellpadding=3>
+<td valign=top><IMG src=city-2-none.jpg width=180><br>City-2: None</td>
+<td valign=top><IMG src=city-2-best.jpg width=180><br>City-2: Best</td>
+<td valign=top><IMG src=city-2-worst.jpg width=180><br>City-2: Worst</td>
+<td valign=top><IMG src=city-2-avg.jpg width=180><br>City-2: Avg</td>
+</table></center><p>
+
+
+<p><center><table border=3 cellpadding=3><tr>
+<td valign=top><IMG src=city-3-none.jpg width=180><br>City-3: None</td>
+<td valign=top><IMG src=city-3-best.jpg width=180><br>City-3: Best</td>
+<td valign=top><IMG src=city-3-worst.jpg width=180><br>City-3: Worst</td>
+<td valign=top><IMG src=city-3-avg.jpg width=180><br>City-3: Avg</td>
+</tr></table></center><p>
+
+I have some more interesting and fun maps in the other <b>city-<i>x</i>.txt</b> files.
+You can click on the links for uncompressed jpg images.
+
+<p><center><table border=3 cellpadding=3>
+<td valign=top><IMG src=city-4-none.jpg width=240><br><a href=city-4-none.jpg>City-4: None</a></td>
+<td valign=top><IMG src=city-4-best.jpg width=240><br><a href=city-4-best.jpg>City-4: Best</a></td>
+<td valign=top><IMG src=city-4-worst.jpg width=240><br><a href=city-4-worst.jpg>City-4: Worst</a></td>
+</table></center><p>
+
+
+<p><center><table border=3 cellpadding=3>
+<td valign=top><IMG src=city-5-best.jpg width=240><br><a href=city-5-best.jpg>City-5: Best</a></td>
+<td valign=top><IMG src=city-5-worst.jpg width=240><br><a href=city-5-worst.jpg>City-5: Worst</a></td>
+<td valign=top><IMG src=city-5-avg.jpg width=240><br><a href=city-5-avg.jpg>City-5: Avg</a></td>
+</table></center><p>
+
+
+<p><center><table border=3 cellpadding=3>
+<td valign=top><IMG src=city-6-best.jpg width=240><br><a href=city-6-best.jpg>City-6: Best</a></td>
+<td valign=top><IMG src=city-6-worst.jpg width=240><br><a href=city-6-worst.jpg>City-6: Worst</a></td>
+<td valign=top><IMG src=city-6-avg.jpg width=240><br><a href=city-6-avg.jpg>City-6: Avg</a></td>
+</table></center><p>
+
+Don't try to view pictures of
+<a href=city-7.txt><b>city-7.txt</b></a>.  It's too big.
+<pre>
+UNIX> <b>city_map none print < city-7.txt | tail -n 1</b>
+ 502001 :    Segment to  499  500       Distance     0.458654
+UNIX> <b>city_map best print < city-7.txt | grep PATH | wc</b>
+    1000    9000   64000
+UNIX> <b>time city_map best print < city-7.txt > /dev/null</b>
+6.684u 0.120s 0:06.82 99.7%     0+0k 0+0io 0pf+0w
+UNIX> 
+</pre>
+
+<p><center><table border=3 cellpadding=3>
+<td valign=top><IMG src=city-8-best.jpg width=240><br><a href=city-8-best.jpg>City-8: Best</a></td>
+<td valign=top><IMG src=city-8-worst.jpg width=240><br><a href=city-8-worst.jpg>City-8: Worst</a></td>
+<td valign=top><IMG src=city-8-avg.jpg width=240><br><a href=city-8-avg.jpg>City-8: Avg</a></td>
+</table></center><p>
+
+<p><center><table border=3 cellpadding=3>
+<td valign=top><IMG src=city-9-best.jpg width=240><br><a href=city-9-best.jpg>City-9: Best</a></td>
+<td valign=top><IMG src=city-9-worst.jpg width=240><br><a href=city-9-worst.jpg>City-9: Worst</a></td>
+<td valign=top><IMG src=city-9-avg.jpg width=240><br><a href=city-9-avg.jpg>City-9: Avg</a></td>
+</table></center><p>
+
+<hr>
+<h1>The Code, and Your Job</h1>
+
+I have provided two program files for you.  You are <i>not</i> allowed to modify either
+of these:
+<p>
+<UL>
+<LI> A header file <b><a href=city_map.h>city_map.h</a></b>.  This defines three
+classes that are at the heart of this assigment.  They are the <b>Intersection</b>,
+<b>Road_Segment</b> and <b>City_Map</b>.  More on them later.
+<p>
+<LI> An object file <b>city_map_base.o</b>.  This implements the <b>main()</b> routine
+of <b>city_map</b>, plus the methods <b>City_Map::Print()</b> and <b>City_Map::Spit_Jgraph()</b>.
+This is nice because you don't have to parse command line arguments or print anything.
+</UL>
+
+Your job is to write <b>city_map.cpp</b>, which will implement two methods:
+
+<UL>
+<LI> <b>City_Map::City_Map()</b>: The constructor needs to create a <b>City_Map</b> from
+a city file on standard input.  You may assume that there are no errors in <b>City_Map</b>.
+<p>
+<LI> <b>City_Map::Dijkstra(int avg_best_worst)</b>: This implements Dijkstra's shortest
+path algorithm from node <b>first</b> to node <b>last</b>.  You may assume that you can 
+always reach <b>last</b> from <b>first</b>.  The argument <b>avg_best_worst</b> is 'A', 
+'B', or 'W', depending on which of those three ways you want to calculate the shortest
+path.  <b>Dijkstra()</b> should return the distance of the shortest path.  Additionally,
+it should put that path in <b>path</b>, which will go from <b>first</b> to <b>last</b>,
+</UL>
+
+When you are done, you should be able to compile with:
+
+<pre>
+UNIX> <b>g++ -o city_map -I/home/plank/cs302/Labs/Lab8 city_map.cpp /home/plank/cs302/Labs/Lab8/city_map_base.o</b>
+</pre>
+
+To grade, I am going to pipe the output of your <b>city_map</b> with <b>print</b> to <b>sort</b>.
+It must match the output of my <b>city_map</b> piped to <b>sort</b>.  All of the grading examples
+have unique light durations and edge lengths.  Therefore, it should not be hard to make the two
+outputs match when piped to <b>sort</b>.  Note that in <b>city-3.txt</b>, there are multiple <b>best</b>
+and <b>avg</b> paths -- that is because light durations and edge lengths are not unique.  You do <i>not</i>
+have to match my output in this case -- you only have to match the outputs (after piping to <b>sort</b>)
+of the grading examples.
+
+<hr>
+<h3>Detail on the header file</h3>
+
+Here is <b><a href=city_map.h>city_map.h</a></b>, in three parts:
+
+<p><center><table border=3 cellpadding=3><td><pre>
+typedef enum { STREET, AVENUE } Road_Type;
+
+class Intersection {
+  public:
+    int street;
+    int avenue;
+    double x;
+    double y;
+    double green[2];    // Light green times for STREET & AVENUE
+    list &lt;class Road_Segment *&gt; adj;
+    double best_time;
+    class Road_Segment *backedge;
+    multimap &lt;double, Intersection *&gt;::iterator bfsq_ptr;
+};
+</pre></td></table></center><p>
+
+The first five fields of an <b>Intersection</b> are the input values -- street number,
+avenue number, x coordinate, y coordinate, and green durations, indexed by <b>Road_Type</b>.
+Next is an adjacency list.  For example, in 
+<b><a href=city-2.txt>city-2.txt</a></b>, the adjacency list for [1,1] contains road
+segments to [1,0] and [0,1].  This is because street 1 and avenue 1 are both one-way.
+On the other hand, the adjacency list for [1,2] contains road segments to [0,2], [1,2]
+and [1,1].  
+<p>
+<i>I don't care about the order of your adjacency lists.  They do not have to match 
+mine.  This is why I pipe the output of <b>city_map</b> to <b>sort</b></i> .
+<p>
+The <b>best_time</b>, <b>backedge</b> and <b>bfsq_ptr</b> 
+fields are for you to use when you implement <b>Dijkstra</b>.
+
+<p><center><table border=3 cellpadding=3><td><pre>
+class Road_Segment {
+   public:
+     Road_Type type;
+     int number;
+     double distance;
+     Intersection *from;
+     Intersection *to;
+};
+</pre></td></table></center><p>
+
+<b>Road_Segment</b> instances represent edges.  They should be completely straightforward.
+For example, in 
+<b><a href=city-2.txt>city-2.txt</a></b> the <b>Road_Segment</b> values for the segment
+from [2,0] to [2,1] will have:
+<UL>
+<LI> <b>type</b> = <b>STREET</b>.
+<LI> <b>number</b> = 2. (Since the segment is part of Street 2).
+<LI> <b>distance</b> = 0.5.
+<LI> <b>from</b> is a pointer to light [2,0].
+<LI> <b>to</b> is a pointer to light [2,1].
+</UL>
+
+<p><center><table border=3 cellpadding=3><td><pre>
+class City_Map {
+  public:
+    City_Map();  
+    void Print();
+    void Spit_Jgraph();
+    double Dijkstra(int avg_best_worst);   // 'A' for avg, 'B' for best, 'W' for worst
+    Intersection *first;
+    Intersection *last;
+    list &lt;Intersection *&gt; all;
+    multimap &lt;double, Intersection *&gt; bfsq;
+    list &lt;Road_Segment *&gt; path;
+};
+</pre></td></table></center><p>
+
+Finally, the <b>City_Map</b> class has four methods -- the constructor and <b>Dijkstra()</b>, 
+which you implement, and <b>Print()/Spit_Jgraph()</b>, which I have implemented.
+<p>
+Additionally, it has five variables.  The first three you have to set up with your
+constructor:
+<p>
+<UL>
+<LI> <b>first</b> is a pointer to light [0,0].
+<LI> <b>last</b> is a pointer to the light of the largest street and avenue.
+<LI> <b>all</b> is list of lights, <i>in the order in which they appear in the input file</i>.
+<LI> <b>bfsq</b> is is for you to use when you implement <b>Dijkstra()</b>.   
+<LI> <b>path</b> should be set by <b>Dijstra()</b> to be the shortest path from <b>first</b> to <b>last</b>.
+</UL>
+
+<hr>
+<h2>Help Getting Started</h2>
+
+Start off by implementing <b>Dijkstra()</b> to do nothing by return 0.  That lets you work on 
+the constructor.
+<p>
+Work incrementally on the constructor.  First, write a pass that reads all of the lights,
+creates their <b>Intersection</b> classes and puts them onto <b>all</b>, without worrying
+about adjacency lists.  You should then be able to run the program and have it print out
+the graph without edges.  
+<p>
+Next, work on adding the edges and again print.   This is a pain.  I used a temporary two-dimensional
+vector of Intersections, which made it easy for me to get from one intersection to another, and 
+set up the adjacencly lists.  When I was done, I discarded the vector (actually, that was done 
+automatically for me)..
+<p>
+When you're done with this, <b>none</b> and
+<b>print</b> should work.  Then get busy on <b>Dijkstra()</b>.  Frankly, I think writing <b>Dijkstra()</b>
+is easier than getting the adjacency lists set up.
