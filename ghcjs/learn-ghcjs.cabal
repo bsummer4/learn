@@ -1,0 +1,18 @@
+name:                learn-ghcjs
+version:             0.1.0.0
+synopsis:            Example GHCJS program.
+description:         Example GHCJS program.
+license:             AGPL-3
+license-file:        LICENSE
+author:              Benjamin Summers
+maintainer:          ben@benjaminsummers.net
+copyright:           Benjamin Summers
+category:            Tutorial
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable ghcjs
+  main-is:             Main.hs
+  build-depends:       base
+  hs-source-dirs:      .
+  default-language:    Haskell2010
