@@ -1,0 +1,68 @@
+name: try-pipes
+version: '0.1.0.0'
+
+executables:
+  try-pipes:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+
+dependencies:
+  - base
+  - classy-prelude
+  - lens
+
+  - pipes
+  - pipes-aeson
+  - pipes-attoparsec
+  - pipes-bgzf
+  - pipes-bytestring
+  - pipes-cacophony
+  - pipes-cliff
+  - pipes-concurrency
+  - pipes-csv
+  - pipes-extras
+  - pipes-fastx
+  - pipes-group
+  - pipes-http
+  - pipes-illumina
+  - pipes-mongodb
+  - pipes-network
+  - pipes-parse
+  - pipes-random
+  - pipes-safe
+  - pipes-text
+  - pipes-wai
+
+default-extensions:
+  - BangPatterns
+  - ConstraintKinds
+  - DataKinds
+  - DeriveDataTypeable
+  - ExistentialQuantification
+  - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - KindSignatures
+  - LambdaCase
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - NamedFieldPuns
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - PolyKinds
+  - QuasiQuotes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TupleSections
+  - TypeFamilies
+  - TypeSynonymInstances
+  - UnicodeSyntax
+  - ViewPatterns
