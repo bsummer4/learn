@@ -1,5 +1,3 @@
-{-# LANGUAGE UnicodeSyntax #-}
-
 module A(cons,car,cdr,setCar,setCdr) where
 
 cons ∷ a → b → (a,b)

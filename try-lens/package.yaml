@@ -1,0 +1,23 @@
+name: try-lens
+version: '0.1.0.0'
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+
+executables:
+  try-lens:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+
+dependencies:
+  - base
+  - text
+  - lens
+  - containers
+  - base-unicode-symbols
+
+default-extensions:
+  - UnicodeSyntax
