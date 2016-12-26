@@ -1,0 +1,41 @@
+name: try-alex
+version: '0.0.1'
+category: Language
+author: Benjamin Summers
+maintainer: Benjamin Summers <ben@benjaminsummers.net>
+license: AGPL
+
+build-tools: alex
+ghc-options: -Wall
+dependencies:
+  - array
+  - base
+  - bytestring
+  - classy-prelude
+  - deepseq
+  - text
+
+default-extensions:
+  - LambdaCase
+
+library:
+  source-dirs: lib
+  exposed-modules:
+    - TryAlex.LexChars
+    - TryAlex.LexLines
+
+executables:
+  alex-cat:
+    source-dirs: app
+    main: Cat.hs
+    dependencies: try-alex
+
+  alex-cat-lines:
+    source-dirs: app
+    main: CatLines.hs
+    dependencies: try-alex
+
+  alex-lex-lua:
+    source-dirs: app
+    main: LexLua.hs
+    dependencies: language-lua

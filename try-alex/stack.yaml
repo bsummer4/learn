@@ -1,0 +1,4 @@
+resolver: lts-7.14
+packages: ['.']
+extra-deps:
+  - language-lua-0.10.0
