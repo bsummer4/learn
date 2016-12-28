@@ -23,6 +23,7 @@ library:
   exposed-modules:
     - TryAlex.LexChars
     - TryAlex.LexLines
+    - TryAlex.LexComments
 
 executables:
   alex-cat:
@@ -39,3 +40,8 @@ executables:
     source-dirs: app
     main: LexLua.hs
     dependencies: language-lua
+
+  alex-comments:
+    source-dirs: app
+    main: DropComments.hs
+    dependencies: try-alex
