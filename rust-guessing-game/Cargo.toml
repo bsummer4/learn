@@ -1,0 +1,9 @@
+[package]
+
+name = "rust-guessing-game"
+version = "0.0.1"
+authors = [ "Benjamin Summers <benjamin@bsummers.me>" ]
+
+[dependencies]
+
+rand="0.3.0"
