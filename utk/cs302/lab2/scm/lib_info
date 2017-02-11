@@ -1,0 +1,18 @@
+#!/home/bsummer4/bin/scheme -s 
+!#
+
+(if (not (= 1 (length command-line-arguments)))
+    (display "usage: lib_info file"))
+
+(define filename (list-ref command-line-arguments 0))
+(for-each load
+	  `("utility.scm"
+	    "set.scm"
+	    "read-lines.scm"
+	    "split.scm"
+	    "time.scm"
+	    "track.scm"
+	    "album.scm"
+	    "artist.scm"
+	    "song-info.scm"
+	    "lab2.scm"))

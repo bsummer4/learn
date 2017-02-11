@@ -1,0 +1,1 @@
+(read-all-words (open-input-file "text.txt") whitespace?)
