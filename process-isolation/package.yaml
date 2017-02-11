@@ -10,7 +10,9 @@ executables:
 dependencies:
   - base
   - classy-prelude
+  - distributed-process
   - lens
+  - network
   - unix
 
 default-extensions:

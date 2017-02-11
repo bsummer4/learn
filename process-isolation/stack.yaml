@@ -1,2 +1,4 @@
-resolver: lts-7.2
+resolver: lts-7.19
 packages: ['.']
+extra-deps:
+  - distributed-process-0.6.6
