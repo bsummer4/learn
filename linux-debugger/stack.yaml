@@ -1,0 +1,9 @@
+resolver: lts-8.0
+packages:
+  - '.'
+  - location:
+      git: git@github.com:GaloisInc/linux-ptrace
+      commit: e75b2d927297769c2eacfa5bed9f7f0679678e24
+  - location:
+      git: git@github.com:GaloisInc/posix-waitpid.git
+      commit: 291b970f2ec6f57e6c65dde2432d7bf198f307c3
