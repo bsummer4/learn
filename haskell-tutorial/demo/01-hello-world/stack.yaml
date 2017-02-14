@@ -1,0 +1,7 @@
+# `resolver: lts-8.0` tells stack which set of libraries we want to work
+# with. The Stackage project maintains a huge set of libraries that are
+# guaranteed to work together well. This system eliminates any possibility of
+# dependency conflicts, and makes builds completely reproducible.
+
+resolver: lts-8.0
+packages: ['.']

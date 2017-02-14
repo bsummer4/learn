@@ -1,25 +1,3 @@
-#!/usr/bin/env bash
-
-set -xe
-
-mkdir -p demo/04-do-notation
-cd demo/04-do-notation
-
-cat >stack.yaml <<EOF
-resolver: lts-8.0
-packages: ['.']
-EOF
-
-cat >package.yaml <<EOF
-name: do-notation
-version: '0.1.0.0'
-dependencies: ['base']
-executables:
-  do-notation:
-    main: Main.hs
-EOF
-
-cat >Main.hs <<'EOF'
 -- "do notation" is a simple system that takes imperative-looking code,
 -- and converts it into a bunch of nested calls to `bind` and `andThen`.
 -- The implementations of `andThen` and `bindIO` demonstrate the entire
@@ -89,8 +67,3 @@ main = do
     putStrLn "How many times should we say 'Hello World'?"
     nTimes <- getInt
     doTimes(nTimes, helloWorld)
-EOF
-
-stack setup
-stack build
-stack exec do-notation

@@ -1,25 +1,3 @@
-#!/usr/bin/env bash
-
-set -xe
-
-mkdir -p demo/03-io-machines
-cd demo/03-io-machines
-
-cat >stack.yaml <<EOF
-resolver: lts-8.0
-packages: ['.']
-EOF
-
-cat >package.yaml <<EOF
-name: io-machines
-version: '0.1.0.0'
-dependencies: ['base']
-executables:
-  io-machines:
-    main: Main.hs
-EOF
-
-cat >Main.hs <<'EOF'
 module Main (main) where
 
 import qualified Control.Monad
@@ -74,8 +52,3 @@ main =
     bindIO(
       getInt,
       \n -> doNTimes(n, helloWorld)))
-EOF
-
-stack setup
-stack build
-stack exec io-machines

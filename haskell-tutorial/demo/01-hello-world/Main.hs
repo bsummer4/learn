@@ -1,32 +1,3 @@
-#!/usr/bin/env bash
-
-set -xe
-
-mkdir -p demo/01-hello-world
-cd demo/01-hello-world
-
-cat >stack.yaml <<'EOF'
-# `resolver: lts-8.0` tells stack which set of libraries we want to work
-# with. The Stackage project maintains a huge set of libraries that are
-# guaranteed to work together well. This system eliminates any possibility of
-# dependency conflicts, and makes builds completely reproducible.
-
-resolver: lts-8.0
-packages: ['.']
-EOF
-
-cat >package.yaml <<'EOF'
-# This sets up a super bare-bones haskell package called `hello-world`
-
-name: hello-world
-version: '0.1.0.0'
-dependencies: ['base']
-executables:
-  hello-world:
-    main: Main.hs
-EOF
-
-cat >Main.hs <<'EOF'
 main :: IO ()
 main = putStrLn "Hello World"
 
@@ -57,8 +28,3 @@ main = putStrLn "Hello World"
 --
 -- One more thing to notice before we move on, is that the top-level entry
 -- point into a Haskell program is always an `IO` machine.
-EOF
-
-stack setup
-stack build
-stack exec hello-world

@@ -1,0 +1,8 @@
+# This sets up a super bare-bones haskell package called `hello-world`
+
+name: hello-world
+version: '0.1.0.0'
+dependencies: ['base']
+executables:
+  hello-world:
+    main: Main.hs

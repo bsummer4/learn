@@ -1,0 +1,6 @@
+name: do-notation
+version: '0.1.0.0'
+dependencies: ['base']
+executables:
+  do-notation:
+    main: Main.hs

@@ -1,0 +1,6 @@
+name: io-machines
+version: '0.1.0.0'
+dependencies: ['base']
+executables:
+  io-machines:
+    main: Main.hs
