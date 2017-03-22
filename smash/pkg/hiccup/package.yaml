@@ -1,0 +1,46 @@
+name: hiccup
+version: '0.1.0.0'
+
+library:
+  source-dirs: src
+  ghc-options: -O2 -funbox-strict-fields
+
+dependencies:
+  - base
+  - time
+  - random
+  - mtl
+  - parsec
+  - containers
+  - bytestring
+  - linenoise
+
+default-extensions:
+  - BangPatterns
+  - ConstraintKinds
+  - DataKinds
+  - DeriveDataTypeable
+  - ExistentialQuantification
+  - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - KindSignatures
+  - LambdaCase
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - NamedFieldPuns
+  # NoImplicitPrelude
+  - OverloadedStrings
+  - PolyKinds
+  - QuasiQuotes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TupleSections
+  - TypeFamilies
+  - TypeSynonymInstances
+  - UnicodeSyntax
+  - ViewPatterns
