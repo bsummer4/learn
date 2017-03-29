@@ -1,6 +1,7 @@
 {-# LANGUAGE
     DeriveDataTypeable
   , FlexibleInstances
+  , OverlappingInstances
   , CPP
   , OverloadedStrings
   , RecordWildCards

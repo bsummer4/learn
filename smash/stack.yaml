@@ -3,3 +3,4 @@ packages:
   - pkg/linenoise
   - pkg/hiccup
   - pkg/smash
+  - pkg/language-bash
