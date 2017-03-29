@@ -1,0 +1,12 @@
+name: hello
+version: '0.1.0.0'
+synopsis: Hello World with Nix
+category: Learning Exercise
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: MIT
+dependencies:
+- base
+executables:
+  hello:
+    main: Main.hs

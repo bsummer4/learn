@@ -1,0 +1,34 @@
+resolver: lts-8.5
+packages:
+  # hspkg/chat           # No package.yaml
+  # hspkg/cs302/lab8     # No package.yaml
+  # hspkg/dijkstra       # No package.yaml
+  # hspkg/graph-store    # No package.yaml
+  # hspkg/ghcjs          # Malformed package.yaml
+  # hspkg/hsgl           # Dependency conflict from the `gl` package.
+  # hspkg/db             # Dependency conflict from the `postgres-simple` package.
+  # hspkg/linux-debugger # Dependency conflict with the `posix-waitpid` package.
+  # hspkg/try-pipes      # Dependency conflict with the `pipes-bgzf` package.
+  # hspkg/try-alex       # Type error
+  # hspkg/record         # Type error
+  # hspkg/opaleye        # Type error
+  # hspkg/persistent     # Type error
+  # hspkg/raft           # Parse error
+
+  - hspkg/algo
+  - hspkg/hiccup
+  - hspkg/language-bash
+  - hspkg/linenoise
+  - hspkg/process-isolation
+  - hspkg/nix
+  - hspkg/pricing
+  - hspkg/smash
+  - hspkg/try-lens
+
+extra-deps:
+  - binary-generic-0.2.1
+  - gnuplot-0.5.4.1
+  - language-lua-0.10.0
+  - record-0.4.2
+  - basic-lens-0.0.2
+  - data-accessor-transformers-0.2.1.7

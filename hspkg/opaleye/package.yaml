@@ -1,0 +1,24 @@
+name: learn-opaleye
+version: '0.1.0.0'
+category: Learning Exercise
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: MIT
+dependencies:
+- base
+- contravariant
+- old-locale
+- opaleye
+- postgresql-simple
+- pretty
+- product-profunctors
+- profunctors
+- semigroups
+- text
+- time
+- transformers
+- uuid
+executables:
+  learn-opaleye:
+    main: Main.hs
+    source-dirs: src

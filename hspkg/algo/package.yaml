@@ -1,0 +1,17 @@
+name: algo
+version: '0.1.0.0'
+category: Data
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: MIT
+dependencies:
+- base
+- vector
+- primitive
+- monad-loops
+- QuickCheck
+library:
+  source-dirs: hs
+  exposed-modules:
+  - Data.Vector.BubbleSort
+  - Data.Vector.InsertionSort

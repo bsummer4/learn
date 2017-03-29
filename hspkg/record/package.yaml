@@ -1,0 +1,14 @@
+name: record-test
+version: '0.1.0.0'
+synopsis: Testing out the ‘record’ library.
+category: Learning Exercise
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: MIT
+dependencies:
+- base
+- record
+- lens
+executables:
+  record-test:
+    main: Main.hs

@@ -1,0 +1,25 @@
+name: raft
+version: '0.1.0.0'
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: GPL-3
+ghc-options:
+- -Wall
+- -O2
+dependencies:
+- base
+- base-unicode-symbols
+- binary
+- binary-generic ==0.2.1
+- containers
+- distributed-process
+- distributed-process-simplelocalnet
+- distributed-static
+- github
+- network
+- template-haskell
+- vector
+- vector-binary-instances
+library:
+  exposed-modules:
+  - Raft

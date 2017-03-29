@@ -1,0 +1,22 @@
+name: learn-persistent
+version: '0.1.0.0'
+synopsis: Teaching myself how to use persistent
+category: Tutorial
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: PublicDomain
+dependencies:
+- base
+- persistent
+- persistent-postgresql
+- transformers
+- persistent-template
+- time
+- base-unicode-symbols
+- bytestring
+- text
+- time
+executables:
+  learn-persistent:
+    main: Main.hs
+    ghc-options: -O3

@@ -3,3 +3,5 @@ cabal.sandbox.config
 .cabal-sandbox
 *.hi
 .stack-work/
+*.cabal
+.stack-work

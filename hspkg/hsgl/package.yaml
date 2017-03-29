@@ -1,0 +1,20 @@
+name: hsgl
+version: '0.1.0.0'
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: AllRightsReserved
+dependencies:
+- base
+- base-unicode-symbols
+- transformers
+- vector
+- text
+- gl
+- GLFW-b
+- linear
+- distributive
+- lens
+- JuicyPixels
+executables:
+  hsgl:
+    main: Main.hs

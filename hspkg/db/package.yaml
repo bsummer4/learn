@@ -1,0 +1,11 @@
+name: db
+version: '0.1.0.0'
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: UnspecifiedLicense
+dependencies:
+- base
+- postgres-simple
+executables:
+  db:
+    main: Sql.hs

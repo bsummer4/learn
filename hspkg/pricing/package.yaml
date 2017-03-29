@@ -1,0 +1,17 @@
+name: learn-pricing
+version: '0.1.0.0'
+author: Benjamin Summers
+maintainer: ben@benjaminsummers.net
+license: UnspecifiedLicense
+
+ghc-options:
+  - -O2
+dependencies:
+  - base
+  - vector
+  - gnuplot
+  - base-unicode-symbols
+
+executables:
+  learn-pricing:
+    main: pricing.hs

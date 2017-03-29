@@ -1,0 +1,33 @@
+name: linenoise
+version: '0.1'
+synopsis: Interactive prompts with linenoise.
+description: Interactive prompts with linenoise.
+category: User Interfaces
+author: Stephen Diehl
+maintainer: stephen.m.diehl@gmail.com
+copyright: 2014 Stephen Diehl
+license: BSD3
+homepage: https://github.com/sdiehl/haskell-linenoise
+git: git@github.com:sdiehl/haskell-linenoise.git
+bug-reports: https://github.com/sdiehl/haskell-linenoise/issues
+tested-with: GHC==7.6.1 GHC==7.6.3 GHC==7.8.3
+extra-source-files:
+- cbits/linenoise.h
+other-extensions:
+- ForeignFunctionInterface
+ghc-options:
+- -Wall
+- -fwarn-tabs
+include-dirs:
+- cbits
+dependencies:
+- base
+- mtl
+- exceptions
+- filepath
+- directory
+library:
+  source-dirs: src
+  c-sources: cbits/linenoise.c
+  exposed-modules:
+  - System.Console.Repl
