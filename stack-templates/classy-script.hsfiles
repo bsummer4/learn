@@ -1,0 +1,54 @@
+{-# START_FILE package.yaml #-}
+name:                {{name}}
+version:             0.1.0.0
+license:             BSD3
+
+dependencies:
+  - base
+  - classy-prelude
+  - lens
+
+executables:
+  {{name}}:
+    source-dirs: .
+    main:        Main.hs
+    ghc-options: -O2 -funbox-strict-fields
+
+default-extensions:
+  - BangPatterns
+  - ConstraintKinds
+  - DataKinds
+  - DeriveDataTypeable
+  - ExistentialQuantification
+  - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - KindSignatures
+  - LambdaCase
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - NamedFieldPuns
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - PolyKinds
+  - QuasiQuotes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TupleSections
+  - TypeFamilies
+  - TypeSynonymInstances
+  - UnicodeSyntax
+  - ViewPatterns
+
+{-# START_FILE Main.hs #-}
+module Main where
+
+import ClassyPrelude
+
+main ∷ IO ()
+main = do
+  putStrLn "hello world"
