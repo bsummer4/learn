@@ -21,9 +21,10 @@ packages:
   - hspkg/linenoise
   - hspkg/process-isolation
   - hspkg/nix
-  - hspkg/pricing
+  - hspkg/learn-pricing
   - hspkg/smash
   - hspkg/try-lens
+  - hspkg/arabic-script
 
 extra-deps:
   - binary-generic-0.2.1

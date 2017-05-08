@@ -14,4 +14,4 @@ dependencies:
 
 executables:
   learn-pricing:
-    main: pricing.hs
+    main: Main.hs

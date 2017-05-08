@@ -16,8 +16,8 @@ clean:
 	rm -f o.* *.o *.so data.txt test.png pypricing.c
 	rm -rf ./yuck
 
-pricing-in-hs: pricing.hs
-	ghc -O2 -fllvm pricing.hs -o $@
+pricing-in-hs: Main.hs
+	ghc -O2 -fllvm Main.hs -o $@
 
 pricing-in-c: pricing.c
 	clang -O3 pricing.c -o $@

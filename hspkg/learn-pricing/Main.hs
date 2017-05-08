@@ -35,23 +35,27 @@ type BOM = Vec (Int, Vec PricePt)
 -- TODO Test this.
 -- TODO For ‘interpolate n [0..n]’ we output ‘[1..n]’ make this clear.
 interpolate ∷ Unbox a ⇒ Int → UVec a → UVec a
-interpolate n v = UVec.generate n (\i → v!floor(inc*f i))
-  where inc = f (UVec.length v) / f n
-        f = fromIntegral ∷ (Int → Double)
+interpolate n v =
+  UVec.generate n (\i → v!floor(inc*f i))
+ where
+  inc = f (UVec.length v) / f n
+  f = fromIntegral ∷ (Int → Double)
 
 scale ∷ Num a ⇒ a → Vec a → Vec a
 scale x v = Vec.map (x*) v
 
 priceAt ∷ UVec Int → UVec Double → (UVec Double → Double)
-priceAt units prices memo = minimize $ UVec.zipWith f units prices
-	where f u c = priceOfferAt u c memo
-	      minimize = UVec.foldl' min (1/0)
+priceAt units prices memo =
+  minimize $ UVec.zipWith f units prices
+ where
+  f u c = priceOfferAt u c memo
+  minimize = UVec.foldl' min (1/0)
 
 priceOfferAt ∷ Int → Double → UVec Double → Double
 priceOfferAt units price memo =
-	let buying = UVec.length memo in
-	let remaining = buying-units in
-	if buying≡0 then 0 else
+  let buying = UVec.length memo in
+  let remaining = buying-units in
+  if buying≡0 then 0 else
   if remaining≤0 then 0 else
   memo!remaining
 
@@ -60,20 +64,23 @@ pricePart p units prices = UVec.constructN (xmax p) $ priceAt units prices
 
 unitPrices ∷ UVec Double → UVec Double
 unitPrices v = UVec.generate (UVec.length v) e
-	where e ∷ Int → Double
-	      e 0 = 0
-	      e i = (v!i) / (fromIntegral i)
+ where
+  e ∷ Int → Double
+  e 0 = 0
+  e i = (v!i) / (fromIntegral i)
 
 boom ∷ Vec PricePt → (UVec Int, UVec Double)
 boom pts = (units, prices)
-	where units = UVec.fromList $ map fst $ Vec.toList pts
-	      prices = UVec.fromList $ map snd $ Vec.toList pts
+ where
+  units = UVec.fromList $ map fst $ Vec.toList pts
+  prices = UVec.fromList $ map snd $ Vec.toList pts
 
-main = do let e@(ps,(q,offers)) = slowExample 3
-              (units,prices) = boom offers
-              p = pricePart ps units prices
-          print $ UVec.length p
-
+main ∷ IO ()
+main = print $ UVec.length p
+ where
+  e@(ps,(q,offers)) = slowExample 3
+  (units,prices) = boom offers
+  p = pricePart ps units prices
 
 -- Testing
 testPlot p = plotList [YRange(0,1.1),PNG("test.png")] l

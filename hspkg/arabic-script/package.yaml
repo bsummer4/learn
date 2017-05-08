@@ -1,0 +1,11 @@
+name:                arabic-script
+version:             0.1.0.0
+
+dependencies:
+  - base
+  - text
+
+executables:
+  arabic-script:
+    source-dirs:      src
+    main:             Main.hs
