@@ -12,6 +12,8 @@ dependencies:
   - hiccup
   - classy-prelude
   - linenoise
+  - language-bash
+  - bytestring
 
 default-extensions:
   - BangPatterns
