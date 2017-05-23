@@ -1,4 +1,4 @@
-resolver: lts-8.5
+resolver: lts-8.15
 packages:
   # hs/chat           # No package.yaml
   # hs/cs302/lab8     # No package.yaml
@@ -25,6 +25,7 @@ packages:
   - hs/smash
   - hs/try-lens
   - hs/arabic-script
+  - hs/play-with-data-dynamic
 
 extra-deps:
   - binary-generic-0.2.1
