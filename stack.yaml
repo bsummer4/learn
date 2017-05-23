@@ -1,30 +1,30 @@
 resolver: lts-8.5
 packages:
-  # hspkg/chat           # No package.yaml
-  # hspkg/cs302/lab8     # No package.yaml
-  # hspkg/dijkstra       # No package.yaml
-  # hspkg/graph-store    # No package.yaml
-  # hspkg/ghcjs          # Malformed package.yaml
-  # hspkg/hsgl           # Dependency conflict from the `gl` package.
-  # hspkg/db             # Dependency conflict from the `postgres-simple` package.
-  # hspkg/linux-debugger # Dependency conflict with the `posix-waitpid` package.
-  # hspkg/try-pipes      # Dependency conflict with the `pipes-bgzf` package.
-  # hspkg/try-alex       # Type error
-  # hspkg/record         # Type error
-  # hspkg/opaleye        # Type error
-  # hspkg/persistent     # Type error
-  # hspkg/raft           # Parse error
+  # hs/chat           # No package.yaml
+  # hs/cs302/lab8     # No package.yaml
+  # hs/dijkstra       # No package.yaml
+  # hs/graph-store    # No package.yaml
+  # hs/ghcjs          # Malformed package.yaml
+  # hs/hsgl           # Dependency conflict from the `gl` package.
+  # hs/db             # Dependency conflict from the `postgres-simple` package.
+  # hs/linux-debugger # Dependency conflict with the `posix-waitpid` package.
+  # hs/try-pipes      # Dependency conflict with the `pipes-bgzf` package.
+  # hs/try-alex       # Type error
+  # hs/record         # Type error
+  # hs/opaleye        # Type error
+  # hs/persistent     # Type error
+  # hs/raft           # Parse error
 
-  - hspkg/algo
-  - hspkg/hiccup
-  - hspkg/language-bash
-  - hspkg/linenoise
-  - hspkg/process-isolation
-  - hspkg/nix
-  - hspkg/learn-pricing
-  - hspkg/smash
-  - hspkg/try-lens
-  - hspkg/arabic-script
+  - hs/algo
+  - hs/hiccup
+  - hs/language-bash
+  - hs/linenoise
+  - hs/process-isolation
+  - hs/nix
+  - hs/learn-pricing
+  - hs/smash
+  - hs/try-lens
+  - hs/arabic-script
 
 extra-deps:
   - binary-generic-0.2.1

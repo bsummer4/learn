@@ -14,6 +14,8 @@ dependencies:
   - linenoise
   - language-bash
   - bytestring
+  - semigroups
+  - mtl
 
 default-extensions:
   - BangPatterns

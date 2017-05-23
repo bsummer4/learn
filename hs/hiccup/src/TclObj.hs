@@ -37,23 +37,32 @@ import qualified Data.Foldable as F
 
 --------------------------------------------------------------------------------------------------------------
 
-data TclObj = TclInt !Int BString |
-              TclDouble !Double BString |
-              TclList !(S.Seq TclObj) BString |
-              TclBStr !BString (Maybe Int) (Either String Parsed) deriving (Show,Eq)
+data TclObj = TclInt !Int BString
+            | TclDouble !Double BString
+            | TclList !(S.Seq TclObj) BString
+            | TclBStr !BString (Maybe Int) (Either String Parsed)
+  deriving (Show,Eq)
 
+mkTclStr :: String -> TclObj
 mkTclStr s  = mkTclBStr (pack s)
+
+mkTclBStr :: BString -> TclObj
 mkTclBStr s = TclBStr s (maybeInt s) (tryParsed s)
 {-# INLINE mkTclBStr #-}
 
 mkTclList l  = TclList (S.fromList l) (fromList (map asBStr l))
 mkTclList' l = TclList l (fromList (map asBStr (F.toList l)))
 
+fromBlock :: BString -> Either String Parsed -> TclObj
 fromBlock s p = TclBStr s (maybeInt s) p
 
-maybeInt s = case BS.readInt (dropWhite s) of
-                Nothing    -> Nothing
-                Just (i,r) -> if BS.null r || BS.null (dropWhite r) then Just i else Nothing
+maybeInt :: BS.ByteString -> Maybe Int
+maybeInt s =
+  case BS.readInt (dropWhite s) of
+    Nothing    -> Nothing
+    Just (i,r) -> if BS.null r || BS.null (dropWhite r)
+                    then Just i
+                    else Nothing
 
 strEq (TclInt i1 _) (TclInt i2 _) = i1 == i2
 strEq o1            o2            = asBStr o1 == asBStr o2

@@ -202,7 +202,7 @@ too bad.
 
 Can we capture both the output and the return value?
 
-    proc outputAndReturn {} { 
+    proc outputAndReturn {} {
         yield "foo"
         return "bar"
     }
@@ -217,12 +217,22 @@ tie things together in a consistent way!
 
 The semantics would like something like this:
 
-    data SmashVal     = TclStr ByteString
-                      | TclInt Int64
-                      | TclRef Word64
-                      ...
+    newtype Ref = MkRef Word64
 
-    type StackFrame = { vars: Map ByteString SmashVal, stdin: InputStream, stdout: OutputStream }
-    type TclState   = NonEmpty TclStackFrame
-    type SmashIO    = StateT TclState ()
-    type SmashProc  = [SmashVal] -> SmashIO SmashVal
+    data SmashVal = TclBytes !ByteString
+                  | TclStr   !Text
+                  | TclInt   !Int64
+                  | TclRef   !Ref
+                  ...
+
+    newtype InputStream  = MkInputStream  (IO (Maybe SmashVal))
+    newtype OutputStream = MkOutputStream (SmashVal -> IO ())
+
+    data StackFrame = MkStackFrame { env:    Map ByteString SmashVal
+                                   , input:  InputStream
+                                   , output: OutputStream
+                                   }
+
+    newtype TclState = MkTclState (NonEmpty TclStackFrame)
+    type SmashIO a   = StateT TclState IO a
+    type SmashProc   = [SmashVal] -> SmashIO SmashVal

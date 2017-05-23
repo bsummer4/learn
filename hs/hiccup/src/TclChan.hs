@@ -17,7 +17,6 @@ data TclChan = TclChan { chanHandle :: Handle, chanName :: BString } deriving (E
 
 tclStdChans = [ mkChan' stdout "stdout", mkChan' stdin "stdin", mkChan' stderr "stderr" ]
 
-
 mkChan h = do n <- uniqueNum
               return (mkChan' h ("file" ++ show n))
  where uniqueNum = newUnique >>= return . hashUnique
